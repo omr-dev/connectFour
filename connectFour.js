@@ -1,161 +1,205 @@
-let positionsList = [
-  "F_Yellow",
-  "G_Red",
-  "D_Yellow",
-  "C_Red",
-  "A_Yellow",
-  "A_Red",
-  "E_Yellow",
-  "D_Red",
-  "D_Yellow",
-  "F_Red",
-  "B_Yellow",
-  "E_Red",
-  "C_Yellow",
-  "D_Red",
-  "F_Yellow",
-  "D_Red",
-  "D_Yellow",
-  "F_Red",
-  "G_Yellow",
-  "C_Red",
-  "F_Yellow",
-  "E_Red",
-  "A_Yellow",
-  "A_Red",
-  "C_Yellow",
-  "B_Red",
-  "E_Yellow",
-  "C_Red",
-  "E_Yellow",
-  "G_Red",
-  "A_Yellow",
-  "A_Red",
-  "G_Yellow",
-  "C_Red",
-  "B_Yellow",
-  "E_Red",
-  "F_Yellow",
-  "G_Red",
-  "G_Yellow",
-  "B_Red",
-  "B_Yellow",
-  "B_Red",
-]; //red
-
 function whoIsWinner(piecesPositionList) {
   //return "Red", "Yellow" or "Draw"
 
   //variables
-  const objColTable = {
-    A: [],
-    B: [],
-    C: [],
-    D: [],
-    E: [],
-    F: [],
-    G: [],
+  const objTable = {
+    A: {
+      1: undefined,
+      2: undefined,
+      3: undefined,
+      4: undefined,
+      5: undefined,
+      6: undefined,
+    },
+    B: {
+      1: undefined,
+      2: undefined,
+      3: undefined,
+      4: undefined,
+      5: undefined,
+      6: undefined,
+    },
+    C: {
+      1: undefined,
+      2: undefined,
+      3: undefined,
+      4: undefined,
+      5: undefined,
+      6: undefined,
+    },
+    D: {
+      1: undefined,
+      2: undefined,
+      3: undefined,
+      4: undefined,
+      5: undefined,
+      6: undefined,
+    },
+    E: {
+      1: undefined,
+      2: undefined,
+      3: undefined,
+      4: undefined,
+      5: undefined,
+      6: undefined,
+    },
+    F: {
+      1: undefined,
+      2: undefined,
+      3: undefined,
+      4: undefined,
+      5: undefined,
+      6: undefined,
+    },
+    G: {
+      1: undefined,
+      2: undefined,
+      3: undefined,
+      4: undefined,
+      5: undefined,
+      6: undefined,
+    },
   };
-  const objRowTable = {
-    1: [],
-    2: [],
-    3: [],
-    4: [],
-    5: [],
-    6: [],
+
+  const addNewMove = (move) => {
+    const colOfMove = move.substring(0, 1);
+    const colorOfMove = move.substring(2);
+    const rowOfMove = selectRow(colOfMove);
+    objTable[colOfMove][rowOfMove] = colorOfMove;
   };
-  const objCrossTable = {
-    A3D6: [],
-    A2E6: [],
-    A1F6: [],
-    B1G6: [],
-    C1G5: [],
-    D1G4: [],
-  };
-  const colNames = Object.keys(objColTable);
-  const crossCellNames = Object.keys(objCrossTable);
 
-  //Column object
-
-  for (let i = 0; i < piecesPositionList.length; i++) {
-    objColTable[piecesPositionList[i].substring(0, 1)].push(
-      piecesPositionList[i].substring(2)
-    );
-  }
-
-  //Row object
-  for (let i = 0; i < 7; i++) {
-    const selectedColsElements = objColTable[colNames[i]];
-    for (let t = 1; t < selectedColsElements.length; t++) {
-      objRowTable[t].push(selectedColsElements[t - 1]);
+  const selectRow = (colOfMove) => {
+    for (let i = 1; i < 7; i++) {
+      if (!objTable[colOfMove][i]) return i;
     }
-  }
-
-  //Cross object
-
-  for (let i = 0; i < 6; i++) {
-    const selectedCross = crossCellNames[i]; //a3d6
-    //TODO: buradan devam et
-    const startColInd = colNames.indexOf(selectedCross.substring(0, 1)); //0->a
-    const startRowInd = Number(selectedCross.substring(1, 2)); //3
-    const endColInd = colNames.indexOf(selectedCross.substring(2, 3)); //3->d
-    const endRowInd = Number(selectedCross.substring(3, 4)); //6
-    for (let i = startColInd, t = startRowInd; i <= endColInd; i++, t++) {
-      objCrossTable[selectedCross].push(objColTable[colNames[i]][t - 1]);
+  };
+  const createCrossObj = () => {
+    const colNames = Object.keys(objTable);
+    const objCrossTable = {
+      A3D6: [],
+      A2E6: [],
+      A1F6: [],
+      B1G6: [],
+      C1G5: [],
+      D1G4: [],
+      A4D1: [],
+      A5E1: [],
+      A6F1: [],
+      B6G1: [],
+      C6G2: [],
+      D6G3: [],
+    };
+    const crossCellNames = Object.keys(objCrossTable);
+    for (let i = 0; i < crossCellNames.length; i++) {
+      const selectedCross = crossCellNames[i];
+      const startColInd = colNames.indexOf(selectedCross.substring(0, 1));
+      const startRowInd = Number(selectedCross.substring(1, 2));
+      const endColInd = colNames.indexOf(selectedCross.substring(2, 3));
+      const endRowInd = Number(selectedCross.substring(3, 4));
+      if (endRowInd > startRowInd) {
+        for (
+          let colInd = startColInd, rowInd = startRowInd;
+          colInd <= endColInd;
+          colInd++, rowInd++
+        ) {
+          objCrossTable[selectedCross].push(objTable[colNames[colInd]][rowInd]);
+        }
+      } else {
+        for (
+          let colInd = startColInd, rowInd = startRowInd;
+          rowInd >= endRowInd;
+          colInd++, rowInd--
+        ) {
+          objCrossTable[selectedCross].push(objTable[colNames[colInd]][rowInd]);
+        }
+      }
     }
-  }
-  console.log(objCrossTable);
 
-  console.log(objColTable);
-  console.log(objRowTable);
-  //check all objects
-  const is4Connected = (arr) => {
-    for (let i = 0; i < arr.length - 3; i++) {
-      if (
-        arr[i] === "Yellow" &&
-        arr[i + 1] === "Yellow" &&
-        arr[i + 2] === "Yellow" &&
-        arr[i + 3] === "Yellow"
-      ) {
-        return "Yellow";
-      } else if (
-        arr[i] === "Red" &&
-        arr[i + 1] === "Red" &&
-        arr[i + 2] === "Red" &&
-        arr[i + 3] === "Red"
-      ) {
-        return "Red";
+    return objCrossTable;
+  };
+  const is4Connected = () => {
+    const colNames = Object.keys(objTable);
+
+    //check columns
+    for (let i = 0; i < 7; i++) {
+      let curCol = colNames[i];
+      for (let row = 1; row < 4; row++) {
+        if (
+          objTable[curCol][row] === "Yellow" &&
+          objTable[curCol][row + 1] === "Yellow" &&
+          objTable[curCol][row + 2] === "Yellow" &&
+          objTable[curCol][row + 3] === "Yellow"
+        ) {
+          return "Yellow";
+        }
+        if (
+          objTable[curCol][row] === "Red" &&
+          objTable[curCol][row + 1] === "Red" &&
+          objTable[curCol][row + 2] === "Red" &&
+          objTable[curCol][row + 3] === "Red"
+        ) {
+          return "Red";
+        }
+      }
+    }
+    //check rows
+    for (let curRow = 1; curRow < 7; curRow++) {
+      for (let col = 0; col < 4; col++) {
+        if (
+          objTable[colNames[col]][curRow] === "Yellow" &&
+          objTable[colNames[col + 1]][curRow] === "Yellow" &&
+          objTable[colNames[col + 2]][curRow] === "Yellow" &&
+          objTable[colNames[col + 3]][curRow] === "Yellow"
+        ) {
+          return "Yellow";
+        }
+        if (
+          objTable[colNames[col]][curRow] === "Red" &&
+          objTable[colNames[col + 1]][curRow] === "Red" &&
+          objTable[colNames[col + 2]][curRow] === "Red" &&
+          objTable[colNames[col + 3]][curRow] === "Red"
+        ) {
+          return "Red";
+        }
+      }
+    }
+
+    //check cross
+    let newCrossObj = createCrossObj();
+    const crossColNames = Object.keys(newCrossObj);
+
+    for (let i = 0; i < crossColNames.length; i++) {
+      const selectedArray = newCrossObj[crossColNames[i]];
+      for (let t = 0; t < selectedArray.length - 3; t++) {
+        if (
+          selectedArray[t] === "Yellow" &&
+          selectedArray[t + 1] === "Yellow" &&
+          selectedArray[t + 2] === "Yellow" &&
+          selectedArray[t + 3] === "Yellow"
+        ) {
+          return "Yellow";
+        }
+        if (
+          selectedArray[t] === "Red" &&
+          selectedArray[t + 1] === "Red" &&
+          selectedArray[t + 2] === "Red" &&
+          selectedArray[t + 3] === "Red"
+        ) {
+          return "Red";
+        }
       }
     }
   };
 
-  const allInOneArr = (arrays) => {
-    let result = [];
-    for (let i = 0; i < arrays.length; i++) {
-      result.push(arrays[i]);
+  //Main process
+  for (let i = 0; i < piecesPositionList.length; i++) {
+    const piece = piecesPositionList[i];
+    addNewMove(piece);
+    if (is4Connected()) {
+      return is4Connected();
     }
-    return result;
-  };
-  let allTables = [];
-
-  allTables.push(...allInOneArr(Object.values(objColTable)));
-  allTables.push(...allInOneArr(Object.values(objRowTable)));
-  allTables.push(...allInOneArr(Object.values(objCrossTable)));
-  // allInOneArr(Object.values(objColTable)),
-  // allInOneArr(Object.values(objRowTable)),
-  // allInOneArr(Object.values(objCrossTable))
-  //);
-  let winner = "";
-  for (let i = 0; i < allTables.length; i++) {
-    winner = is4Connected(allTables[i]);
-    if (winner != undefined) {
-      break;
+    if (i == piecesPositionList.length - 1) {
+      return "Draw";
     }
-  }
-  if (winner === undefined) {
-    return "Draw";
-  } else {
-    return winner;
   }
 }
-console.log(whoIsWinner(positionsList));
